@@ -96,6 +96,21 @@ def setup_aggregate_repo(repo_dir):
         print("Aggregate repo already exists, skipping setup")
 
 
+def update_aggregate_repsitory(rosinstall_yaml_dict, repo_path):
+    errors = {}
+    for e in rosinstall_yaml_dict:
+        if not 'git' in e:
+            print("skipping element %s due to not git" % e)
+            continue
+        entry = e['git']
+        try:
+            import_repo(entry['local-name'], entry['version'], entry['uri'], repo_path)
+        except subprocess.CalledProcessError as ex:
+            errors[entry['local-name']] = str(ex)
+    return errors
+
+
+
 def main(args):
     setup_aggregate_repo(args.aggregate_repo_path)
 
@@ -108,17 +123,7 @@ def main(args):
 
     yd = yaml.load(yaml_file)
 
-    errors = {}
-    for e in yd:
-        if not 'git' in e:
-            print("skipping element %s due to not git" % e)
-            continue
-        entry = e['git']
-        try:
-            import_repo(entry['local-name'], entry['version'], entry['uri'], args.aggregate_repo_path)
-        except subprocess.CalledProcessError as ex:
-            errors[entry['local-name']] = str(ex)
-
+    errors = update_aggregate_repsitory(yd, args.aggregate_repo_path)
 
     run_gitstats(args.aggregate_repo_path, args.output_dir)
     run_cloc(args.aggregate_repo_path, args.output_dir)
