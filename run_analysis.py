@@ -112,18 +112,21 @@ def update_aggregate_repsitory(rosinstall_yaml_dict, repo_path):
 
 
 def main(args):
-    setup_aggregate_repo(args.aggregate_repo_path)
+    errors = {}
 
-    if args.rosinstall_file:
-        with open(args.rosinstall_file, 'r') as fh:
-            yaml_file = fh.read()
-            print("Using passed rosinstall [%s] instead of generating" % args.rosinstall_file)
-    else:
-        yaml_file = generate_rosinstall(args.rosdistro, metapackage=args.metapackage)
 
-    yd = yaml.load(yaml_file)
+    if not args.analyze_only:
+        setup_aggregate_repo(args.aggregate_repo_path)
+        if args.rosinstall_file:
+            with open(args.rosinstall_file, 'r') as fh:
+                yaml_file = fh.read()
+                print("Using passed rosinstall [%s] instead of generating" % args.rosinstall_file)
+        else:
+            yaml_file = generate_rosinstall(args.rosdistro, metapackage=args.metapackage)
 
-    errors = update_aggregate_repsitory(yd, args.aggregate_repo_path)
+        yd = yaml.load(yaml_file)
+
+        errors = update_aggregate_repsitory(yd, args.aggregate_repo_path)
 
     run_gitstats(args.aggregate_repo_path, args.output_dir)
     run_cloc(args.aggregate_repo_path, args.output_dir)
@@ -148,12 +151,18 @@ if __name__ == "__main__":
                         help=
                         'Generate the aggregate repo into this path, '
                         'default aggregate_<ROSDISTRO>_<METAPACKAGE>.')
+    parser.add_argument('--analyze-only', action='store_true',
+                        help='Only run the analysis, do not download code.')
     args=parser.parse_args()
 
+    # Check command line for errors
     if args.rosinstall_file:
         if not os.path.exists(args.rosinstall_file):
             parser.error("rosinstall file passed does not exist")
+    if args.rosinstall_file and args.metapackage:
+        parser.error("Invalid usage, you cannot pass a rosinstall file and a metapackage at the same time.")
+
     if not args.aggregate_repo_path:
         args.aggregate_repo_path = 'aggregate_%s_s%' % (args.rosdistro, args.metapackage)
-    
+
     main(args)
