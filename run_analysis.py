@@ -163,6 +163,6 @@ if __name__ == "__main__":
         parser.error("Invalid usage, you cannot pass a rosinstall file and a metapackage at the same time.")
 
     if not args.aggregate_repo_path:
-        args.aggregate_repo_path = 'aggregate_%s_s%' % (args.rosdistro, args.metapackage)
+        args.aggregate_repo_path = 'aggregate_%s_%s' % (args.rosdistro, args.metapackage)
 
     main(args)
