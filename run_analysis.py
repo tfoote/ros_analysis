@@ -160,7 +160,7 @@ if __name__ == "__main__":
                         help='The metapackage to analyze with all dependencies, or ALL')
     parser.add_argument('--rosinstall-file', action='store',
                         help='Use a rosinstall file passed instead of generating.')
-    parser.add_argument('--output-dir', default='output',
+    parser.add_argument('--output-dir', default=None,
                         help='The directory into which to output.')
     parser.add_argument('--aggregate-repo-path', action='store',
                         help=
@@ -179,5 +179,8 @@ if __name__ == "__main__":
 
     if not args.aggregate_repo_path:
         args.aggregate_repo_path = 'aggregate_%s_%s' % (args.rosdistro, args.metapackage)
+
+    if not args.output_dir:
+        args.output_dir = 'output_%s_%s' % (args.rosdistro, args.metapackage)
 
     main(args)
