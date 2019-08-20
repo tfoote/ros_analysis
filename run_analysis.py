@@ -60,7 +60,7 @@ def import_repo(name, branch, url, repo_dir):
             run(cmd, repo_dir)
     cmd = ['git', 'fetch', name]
     run(cmd, repo_dir)
-    cmd = ['git', 'merge', '-s', 'ours', '--no-commit', '%s/%s' % (name, branch)]
+    cmd = ['git', 'merge', '-s', 'ours', '--no-commit', '--allow-unrelated-histories', '%s/%s' % (name, branch)]
     run(cmd, repo_dir)
     # The merge will find the prefix automatically after the first time
     if first_time:
