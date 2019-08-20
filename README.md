@@ -1,3 +1,7 @@
+## Dependencies
+
+    sudo apt-get install git gource cloc sloccount gitstats
+
 
 ## Example Usage
 
