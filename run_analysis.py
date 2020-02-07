@@ -30,7 +30,7 @@ import yaml
 def generate_rosinstall(rosdistro, metapackage='ALL'):
     print("Generating rosinstall for rosdistro: %s metapackage: %s" % (rosdistro, metapackage))
     cmd = ['rosinstall_generator', '--upstream-development', '--deps', '--rosdistro', rosdistro, metapackage]
-    return subprocess.check_output(cmd)
+    return subprocess.check_output(cmd).decode()
 
 
 def run(cmd, repo_dir):
@@ -41,7 +41,7 @@ def run(cmd, repo_dir):
 def git_check_remote_url(repo_dir, name):
     cmd = ['git', 'config', 'remote.%s.url' % name]
     try:
-        return subprocess.check_output(cmd, cwd=repo_dir).rstrip()
+        return subprocess.check_output(cmd, cwd=repo_dir).decode().rstrip()
     except subprocess.CalledProcessError as ex:
         return None
 
