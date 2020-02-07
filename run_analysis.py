@@ -87,7 +87,7 @@ def run_cloc(repo_dir, output_dir):
 def run_sloccount(repo_dir, output_dir):
     sloccount_file = os.path.join(output_dir, 'sloccount.txt')
     cmd = ['sloccount', repo_dir]
-    output = subprocess.check_output(cmd)
+    output = subprocess.check_output(cmd).decode()
     with open(sloccount_file, 'w') as fh:
         fh.write(output)
 
