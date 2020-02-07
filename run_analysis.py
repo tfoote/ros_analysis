@@ -19,7 +19,7 @@ import argparse
 import os
 import subprocess
 import yaml
-
+import git
 
 
 # helpful posts:
@@ -66,9 +66,11 @@ def import_repo(name, branch, url, repo_dir):
     if first_time:
         cmd = ['git', 'read-tree', '--prefix=%s/' % name, '-u', '%s/%s' % (name, branch)]
         run(cmd, repo_dir)
-    cmd = ['git', 'commit', '-m', '"Imported %s as a subtree"' % name]
-    run(cmd, repo_dir)
-
+    if git.Repo(repo_dir).is_dirty(untracked_files=True):
+        cmd = ['git', 'commit', '-m', '"Imported %s as a subtree"' % name]
+        run(cmd, repo_dir)
+    else:
+        print("skipping commit of %s due to no changes" % repo_dir)
 
 def run_gitstats(repository_dir, output_dir):
     gitstats_dir = os.path.join(output_dir, 'gitstats')
