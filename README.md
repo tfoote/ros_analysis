@@ -17,6 +17,8 @@ other tools:
 Ruby based simple graphs: https://github.com/tomgi/git_stats
 Python based framework for querying using GitPython http://repo.or.cz/w/git-stats.git
 
+Automate hg-fast-export to import a mercurial repository for analysis
+
 Low level GitPython
 
 
@@ -29,3 +31,5 @@ Able to run on rosdistro and on aggregate?
 
 population pyramid, animation?
 
+
+Code velocity. Make a time history of sloccount over time by iterating through the checkouts of the mega repo over time.
