@@ -139,7 +139,7 @@ def main(args):
         else:
             yaml_file = generate_rosinstall(args.rosdistro, metapackage=args.metapackage)
 
-        yd = yaml.load(yaml_file)
+        yd = yaml.safe_load(yaml_file)
 
         errors = update_aggregate_repsitory(yd, args.aggregate_repo_path)
 
