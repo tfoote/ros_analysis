@@ -7,7 +7,7 @@
 
 To analyze indigo:
 
-    python run_analysis.py --rosdistro indigo --output indigo_ALL
+    python3 run_analysis.py --rosdistro indigo --output indigo_ALL
 
 
 Notes:
