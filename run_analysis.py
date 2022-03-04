@@ -78,7 +78,7 @@ def run_gitstats(repository_dir, output_dir):
         os.makedirs(gitstats_dir)
 
 
-    cmd = ['gitstats', repository_dir, gitstats_dir]
+    cmd = ['gitstats', '-c', 'max_domains=100', '-c', 'max_authors=5000', repository_dir, gitstats_dir]
     subprocess.check_call(cmd)
 
 def run_cloc(repo_dir, output_dir):
