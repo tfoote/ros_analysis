@@ -146,9 +146,10 @@ def main(args):
 
         errors = update_aggregate_repsitory(yd, args.aggregate_repo_path)
 
-    run_gitstats(args.aggregate_repo_path, args.output_dir)
-    run_cloc(args.aggregate_repo_path, args.output_dir)
-    run_sloccount(args.aggregate_repo_path, args.output_dir)
+    if not args.no_analyze:
+        run_gitstats(args.aggregate_repo_path, args.output_dir)
+        run_cloc(args.aggregate_repo_path, args.output_dir)
+        run_sloccount(args.aggregate_repo_path, args.output_dir)
 
     print("Errors encountered during cloning include")
     print(errors)
@@ -171,6 +172,8 @@ if __name__ == "__main__":
                         'default aggregate_<ROSDISTRO>_<METAPACKAGE>.')
     parser.add_argument('--analyze-only', action='store_true',
                         help='Only run the analysis, do not download code.')
+    parser.add_argument('--no-analyze', action='store_true',
+                        help='Do not run the analysis, only download code.')
     args=parser.parse_args()
 
     # Check command line for errors
