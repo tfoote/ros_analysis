@@ -46,7 +46,8 @@ def git_check_remote_url(repo_dir, name):
         return None
 
 
-def import_repo(name, branch, url, repo_dir):
+def import_repo(repo_name, branch, url, repo_dir):
+    name = "%s_%s" % (repo_name, branch)
     first_time = not os.path.exists(os.path.join(repo_dir, name))
     if first_time:
         cmd = ['git', 'remote', 'add', name, url]
