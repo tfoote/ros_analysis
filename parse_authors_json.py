@@ -10,7 +10,7 @@ filename_template = 'output_contributors_{year}.json'
 
 unique_authors = {}
 
-for year in range(2008,2021):
+for year in range(2008,2023):
     print(f'Year: {year}')
     try:
         with open(filename_template.format(year=year), 'r') as fh:
