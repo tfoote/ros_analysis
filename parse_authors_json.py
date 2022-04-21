@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 
-filename_template = 'output_contributors_{year}.json'
+filename_template = 'mergestat_{year}.json'
 
 unique_authors = {}
 
