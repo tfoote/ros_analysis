@@ -21,6 +21,7 @@ import subprocess
 import yaml
 import git
 
+from tempfile import NamedTemporaryFile
 
 # helpful posts:
 # - https://help.github.com/articles/about-git-subtree-merges/
@@ -49,10 +50,16 @@ def git_check_remote_url(repo_dir, name):
 def import_repo(repo_name, branch, url, repo_dir):
     name = "%s_%s" % (repo_name, branch)
     first_time = not os.path.exists(os.path.join(repo_dir, name))
+    remote_set = False
     if first_time:
         cmd = ['git', 'remote', 'add', name, url]
-        run(cmd, repo_dir)
-    else:
+        try:
+            run(cmd, repo_dir)
+            remote_set = True
+        except:
+            pass
+            
+    if not remote_set:
         # Check for a changed url
         existing_url = git_check_remote_url(repo_dir, name)
         assert existing_url
@@ -114,7 +121,7 @@ def setup_aggregate_repo(repo_dir):
         print("Aggregate repo already exists, skipping setup")
 
 
-def update_aggregate_repsitory(rosinstall_yaml_dict, repo_path):
+def update_aggregate_repsitory(rosinstall_yaml_dict, repo_path, cache_dir):
     errors = {}
     for e in rosinstall_yaml_dict:
         if not 'git' in e:
@@ -122,11 +129,26 @@ def update_aggregate_repsitory(rosinstall_yaml_dict, repo_path):
             continue
         entry = e['git']
         try:
-            import_repo(entry['local-name'], entry['version'], entry['uri'], repo_path)
+            uri = 'file://' + os.path.join(cache_dir, entry['local-name'])
+            import_repo(entry['local-name'], entry['version'], uri, repo_path)
         except subprocess.CalledProcessError as ex:
             errors[entry['local-name']] = str(ex)
     return errors
 
+
+def cache_repositories(yaml_file, cache_dir):
+    try:
+        os.makedirs(cache_dir)
+    except FileExistsError as ex:
+        pass
+    with NamedTemporaryFile('wt') as fh:
+        fh.write(yaml_file)
+        print("Building cache at %s" % cache_dir)
+        cmd = ['vcs', 'import', '--input', fh.name]
+        try:
+            run(cmd, cache_dir)
+        except subprocess.CalledProcessError as ex:
+            print("Errors occurred when caching %s" % cache_dir)
 
 
 def main(args):
@@ -142,9 +164,13 @@ def main(args):
         else:
             yaml_file = generate_rosinstall(args.rosdistro, metapackage=args.metapackage)
 
+        specific_cache_dir = os.path.join(os.getcwd(), args.cache_dir, args.rosdistro)
+        if not args.no_recache:
+            cache_repositories(yaml_file, specific_cache_dir)
+        
         yd = yaml.safe_load(yaml_file)
 
-        errors = update_aggregate_repsitory(yd, args.aggregate_repo_path)
+        errors = update_aggregate_repsitory(yd, args.aggregate_repo_path, specific_cache_dir)
 
     if not args.no_analyze:
         run_gitstats(args.aggregate_repo_path, args.output_dir)
@@ -166,10 +192,14 @@ if __name__ == "__main__":
                         help='Use a rosinstall file passed instead of generating.')
     parser.add_argument('--output-dir', default=None,
                         help='The directory into which to output.')
+    parser.add_argument('--cache-dir', default='cache',
+                        help='The directory into which to cache repos.')
     parser.add_argument('--aggregate-repo-path', action='store',
                         help=
                         'Generate the aggregate repo into this path, '
                         'default aggregate_<ROSDISTRO>_<METAPACKAGE>.')
+    parser.add_argument('--no-recache', action='store_true',
+                        help='Only import locally, do not download code.')
     parser.add_argument('--analyze-only', action='store_true',
                         help='Only run the analysis, do not download code.')
     parser.add_argument('--no-analyze', action='store_true',
