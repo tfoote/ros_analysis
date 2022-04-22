@@ -48,6 +48,7 @@ def git_check_remote_url(repo_dir, name):
 
 
 def import_repo(repo_name, branch, url, repo_dir):
+    # TODO(tfoote) potentially colliding repo names in different orgs
     name = "%s_%s" % (repo_name, branch)
     first_time = not os.path.exists(os.path.join(repo_dir, name))
     remote_set = False
