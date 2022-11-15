@@ -176,7 +176,7 @@ if __name__ == "__main__":
     if args.rosinstall_file:
         if not os.path.exists(args.rosinstall_file):
             parser.error("rosinstall file passed does not exist")
-    if args.rosinstall_file and args.metapackage:
+    if args.rosinstall_file and args.metapackage != 'ALL':
         parser.error("Invalid usage, you cannot pass a rosinstall file and a metapackage at the same time.")
 
     if not args.aggregate_repo_path:
